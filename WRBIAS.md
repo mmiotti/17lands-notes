@@ -1,24 +1,26 @@
-# Digging into the "Number of Cards Drawn bias" and its impact on GD, GND, and IWD metrics
+# Digging into the "Number of Cards Drawn bias" and its impact on GIH, GND, and IWD metrics
 
-It appears to me that the GD, GND, and IWD metrics on 17Lands are confounded in a way that 1) favors cards that go in archetypes that prefer the game to go long; and 2) favors cards within each archetype that are better when the games to long. The source of the bias is that win rates of cards can be (and often are) correlated with how many cards are being drawn in a given game.
+The GIH, GND, and IWD metrics on 17Lands are confounded in a way that 1) favors cards that go in archetypes that prefer the game to go long; and 2) favors cards within each archetype that are better when the games to long. The source of the bias is that win rates of cards can be (and often are) correlated with how many cards are being drawn in a given game. This bias can substantial affect the GIH, GND, and IWD metrics even when controlling for archetype quality, player skill, and correlation/co-dependence of different cards.
 
-Some of this bias is addressed in the recent article (https://www.17lands.com/blog/using_wr_data), but I feel like the full impact and its significance was missed. The article does mention 1) the potential impact of cards that like when the game goes long on "WIH WR" (but not other metrics), 2) the issue of a card being correlated with / co-dependent on other cards in the deck (e.g. a Koma deck being built in a way that favors finding and casting Koma), and 3) a few confounding factors (sub-archetypes, player skill, etc).
+Some of this bias is addressed in the recent article (https://www.17lands.com/blog/using_wr_data). In particular, the article mentions the potential impact of a *"multicolor deck splashing bombs"* (that likes to draw cards and the game to go long) on typical GIH WR vs an aggro deck. However, I believe that this bias wasn't explored and highlighted enough. It may be substantially larger than some of the other confounding factors mentioned in the article (that are being given a lot more room). The impact appears to be large enough to matter for comparing e.g. Killian to Rise of Extus in Silverquill, and not just a Killian in aggro Silverquill to a splashed Magma Opus in a controlling Quandrix deck.
 
-However, I believe there is an important bias in the GD, GND, and IWD metrics that exists even when controlling for archetype quality, player skill, and correlation/co-dependence of different cards (meaning that it distorts the average / expected WR metrics shown in the tables). The purpose of this write-up is to add to the discussion re: potential issues and caveats with 17Lands metrics, and possibly prompt a follow-up article to illustrate this issue in more detail (in case I haven't just made a mistake or missed something, which is entirely possible).
+The purpose of this write-up is to add to the discussion re: potential issues and caveats with 17Lands metrics, and possibly prompt a follow-up article to illustrate this issue in more detail.
 
 To illustrate what I mean, I constructed an example. This example will show how we can arrive at a table like this:
 
-| Card | WR GD | WR GND | IWD     |
-|----- | ----- | ------ | ------- |
-| 1    | 33.3% | 66.6%  | -33.3pp |
-| 2    | 66.6% | 33.3%  | 33.3pp  |
+| Card | WR GIH | WR GND | IWD     |
+|----- | ------ | ------ | ------- |
+| 1    | 33.3%  | 66.6%  | -33.3pp |
+| 2    | 66.6%  | 33.3%  | 33.3pp  |
 
 in a case where we might intuitively expect a table like this:
 
-| Card | WR GD | WR GND | IWD     |
-|----- | ----- | ------ | ------- |
-| 1    | 50.0% | 50.0%  | 0.0pp   |
-| 2    | 50.0% | 50.0%  | 0.0pp   |
+| Card | WR GIH | WR GND | IWD     |
+|----- | ------ | ------ | ------- |
+| 1    | 50.0%  | 50.0%  | 0.0pp   |
+| 2    | 50.0%  | 50.0%  | 0.0pp   |
+
+even when, as I said, controlling for archetype quality, player skill, and correlation/co-dependence of different cards.
 
 
 ## Example
@@ -32,7 +34,7 @@ in a case where we might intuitively expect a table like this:
 | 30                                     | 0%             | 100%           |
 
 
-**Assumption 2.** Now, let's say we have two cards. `Card 1` only appears in `Archetype A`, `Card 2` only appears in `Archetype B`. Each card is exactly neutral, that is, each card has no effect on the win rate of the corresponding deck, on average, no matter whether it is drawn or not, and each card's impact on the win rate is in no way correlated with other cards that may exist in the deck.
+**Assumption 2.** Now, let's say we have two cards. `Card 1` only appears in `Archetype A`, `Card 2` only appears in `Archetype B`. Each card is exactly neutral, that is, each card has no effect on the win rate of the corresponding deck (neither positive nor negative), on average, neither when drawn or when in deck, and each card's impact on the win rate is in no way correlated with other cards that may exist in the deck.
 
 | Card | Only appears in archetype | True impact on WR when drawn vs not drawn |
 | ---- | ------------------------- | ----------------------------------------- |
@@ -83,28 +85,35 @@ Let's list all possible combinations of game duration, win (which deck / archety
 | 12     | 30                                     | B               | Y              |
 
 
-As we can see, **even though both archetypes have a 50% average win rate, and both cards are neutral (have no effect on the game in terms of expected WR) in both archetypes, one the two cards show vastly different metrics**:
+As we can see, **even though both archetypes have a 50% average win rate, both cards are neutral (have no effect on the game in terms of expected WR) in both archetypes, and neither card's performance is correlated with other cards in the deck, the two cards show vastly different metrics**:
 
-| Card | WR GD | WR GND | IWD     |
-|----- | ----- | ------ | ------- |
-| 1    | 33.3% | 66.6%  | -33.3pp |
-| 2    | 66.6% | 33.3%  | 33.3pp  |
+| Card | WR GIH | WR GND | IWD     |
+|----- | ------ | ------ | ------- |
+| 1    | 33.3%  | 66.6%  | -33.3pp |
+| 2    | 66.6%  | 33.3%  | 33.3pp  |
 
-Even though both archetypes A and B have the same overall winrate, and even though both Cards 1 and 2 are exactly average cards within those archetypes, one would conclude from looking at above table that card 2 is vastly superior to card 1.
+One would conclude from looking at above table that card 2 is vastly superior to card 1, even though both archetypes A and B have the same overall winrate, and even though both Cards 1 and 2 are exactly average cards within those archetypes.
 
 
 ## Discussion / Ways to Avoid Bias
 
 Based on this observation, we can conclude that the WR GD, WR GND, and IWD metrics favor cards that belong to archetypes that prefer the game to go long (e.g. Quandrix vs Silverquill), and cards within a given archetype that prefer the game to go long (e.g. Rise of Extus vs Killian in Silverquill).
 
-The recent article on using WR data () does state that *"[...] think of a multicolor deck splashing bombs that gets run over by a fast aggro deck before it can establish its mana base. Rapid losses and long wins means that in games lost, those cards are much less likely to have been drawn because they were way shorter, while in games won they are more likely to be drawn. This disparity inflates these cards’ GIH WR."* This statement gets rather close to the issue discussed here, but it only mentions the impact on GIH WR, and (in my perception) misses the importance of this effect on all cards across the board, not just splashed multicolor bombs.
+The recent article on using WR data (https://www.17lands.com/blog/using_wr_data) notes *"[...] think of a multicolor deck splashing bombs that gets run over by a fast aggro deck before it can establish its mana base. Rapid losses and long wins means that in games lost, those cards are much less likely to have been drawn because they were way shorter, while in games won they are more likely to be drawn. This disparity inflates these cards’ GIH WR."* This statement gets rather close to the issue discussed here, but it only mentions the impact on GIH WR, and (in my perception) misses the importance of this effect on all cards across the board, not just splashed multicolor bombs.
 
-The `hint` that gives this away in above table is the WR GND. On 17Lands, however, the "WR GND" column is founded by the overall winrate of the corresponding archetype, but also by the typical quality of the deck that the card is maindecked in and the typical quality of the player that player that card (which is why lessons have such a poor WR GND metric). This makes it trickier to use the "WR GND" column to detect this bias, but comparing the "WR GND" rating to the overall true win % of a given archetype can still be a start. *If the WR GND rating is higher than the average win % of the archetype(s) that the card goes in (and you can assume no bias in average deck quality within those archetypes or in player skill), then the bias shown here may have inflated WR GND, deflated WR GD, and therefore deflated IWD. If the WR GND rating is lower than the average win % of the archetype(s) that the card goes in (and you can assume no bias in average deck quality within those archetypes or in player skill), then the bias shown here may have deflated WR GND, inflated WR GD, and therefore inflated IWD.*
+The `hint` that gives this issue away in above table is the WR GND. On 17Lands, however, the "WR GND" column is confounded by the overall winrate of the corresponding archetype, but also by the typical quality of the deck that the card is maindecked in and the typical quality of the player that player that card (which is why lessons have such a poor WR GND metric, which refers to a case where they are maindecked). This makes it trickier to use the "WR GND" column to detect this bias, but comparing the "WR GND" rating to the overall true win % of a given archetype can still be a start: If the WR GND rating is higher than the average WR of the archetype(s) that the card goes in (and you can assume no significant bias in average deck quality within those archetypes or in player skill), then the card may have an inflated WR GND, deflated WR GD, and therefore deflated IWD. If it's the other way round (WR GND lower than average WR of archetype(s)), then the card may have deflated WR GND, inflated WR GD, and therefore inflated IWD.*
 
-Another approach to look at 17Lands data without encountering this bias would be to look at "win rate when in deck", adjusted for the typical win % of the archetype(s) the card goes in. Across thousands of games, this will still give you an idea of how good the card is, and, conveniently, it will automatically account for biases in terms of what other (weaker) cards you need to play to make playing the card in question possible (e.g., are you playing 3 letters of acceptances to splash your Magma Opus in your deck without other ramp?).
+Another approach to look at 17Lands data without encountering this bias would be to look at "win rate when in deck", adjusted for the typical win % of the archetype(s) that the card goes in. Across thousands of games, this will still give you an idea of how good the card is, and, conveniently, it will automatically account for biases in terms of what other (weaker) cards you might need to play to make playing the card in question good.
 
 
 ## An Example From The Real Data
 
 The following examples from the 17Lands tables (STX, BO1, Premier, as of June 9th 2021) illustrate this:
+
+| Card                    | GP WR | WR GIH | WR GND  | IWD    |
+| ------------------------| ----- | ------ | ------- | ------ |
+| Killian                 | 59.1% | 61.3%  | 56.8%   | 4.6pp  |
+| Silverquill Apprentice  | 58.1% | 56.6%  | 59.0%   | -2.4pp |
+
+
 
