@@ -79,7 +79,7 @@ Let's list all possible combinations of game duration, win (which deck / archety
 | 6      | 20                                     | B               | Y              |
 | 7      | 20                                     | A               | Y              |
 | 8      | 20                                     | B               | N              |
-| 9      | 30                                     | B               | Y              |
+| 9      | 30                                     | B               | N              |
 | 10     | 30                                     | B               | Y              |
 | 11     | 30                                     | B               | Y              |
 | 12     | 30                                     | B               | Y              |
