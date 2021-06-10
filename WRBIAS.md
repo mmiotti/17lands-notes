@@ -65,7 +65,7 @@ Since neither cards 1 and 2 affect the win rate of their respective decks when d
 | 20                                     | 50%                                      |
 | 30                                     | 75%                                      |
 
-Therefore, for Card 1 in archetype A, *we are more likely to draw the card in games we lose than in games we win* (simply because we draw more cards overall, even though the card itself has no effect expected probability to win the game). For Card 2 in archetype B, we are more likely to draw the card in games we win than in games we lose. To put it differently: the subsets of the overall data that reflect the "GD" and "GND" metrics are not random samples of the combined pool of games.
+Therefore, for Card 1 in archetype A, *we are more likely to draw the card in games we lose than in games we win* (simply because we draw more cards overall, even though the card itself has no effect expected probability to win the game). For Card 2 in archetype B, we are more likely to draw the card in games we win than in games we lose. To put it differently: the subsets of the overall data that reflect the "GIH" and "GND" metrics are not random samples of the combined pool of games.
 
 Let's list all possible combinations of game duration, win (which deck / archetype wins), and whether a card is drawn or not, proportional to how often each outcome occurs:
 
@@ -97,14 +97,14 @@ One would conclude from looking at above table that card 2 is vastly superior to
 
 ## Discussion / Ways to Avoid Bias
 
-Based on this observation, we can conclude that the WR GD, WR GND, and IWD metrics favor cards that belong to archetypes that prefer the game to go long (e.g. Quandrix vs Silverquill), and cards within a given archetype that prefer the game to go long (e.g. Rise of Extus vs Killian in Silverquill).
+Based on this observation, we can conclude that the WR GIH, WR GND, and IWD metrics favor cards that belong to archetypes that prefer the game to go long (e.g. Quandrix vs Silverquill), and cards within a given archetype that prefer the game to go long (e.g. Rise of Extus vs Killian in Silverquill).
 
 The recent article on using WR data (https://www.17lands.com/blog/using_wr_data) notes *"[...] think of a multicolor deck splashing bombs that gets run over by a fast aggro deck before it can establish its mana base. Rapid losses and long wins means that in games lost, those cards are much less likely to have been drawn because they were way shorter, while in games won they are more likely to be drawn. This disparity inflates these cards’ GIH WR."* This statement gets rather close to the issue discussed here, but it only mentions the impact on GIH WR, and (in my perception) misses the importance of this effect on all cards across the board, not just splashed multicolor bombs.
 
-The `hint` that gives this issue away in above table is the WR GND. On 17Lands, however, the "WR GND" column is confounded by the overall winrate of the corresponding archetype, but also by the typical quality of the deck that the card is maindecked in and the typical quality of the player that player that card (which is why lessons have such a poor WR GND metric, which refers to a case where they are maindecked). This makes it trickier to use the "WR GND" column to detect this bias, but comparing the "WR GND" rating to the overall true win % of a given archetype can still be a start: If the WR GND rating is higher than the average WR of the archetype(s) that the card goes in (and you can assume no significant bias in average deck quality within those archetypes or in player skill), then the card may have an inflated WR GND, deflated WR GD, and therefore deflated IWD. If it's the other way round (WR GND lower than average WR of archetype(s)), then the card may have deflated WR GND, inflated WR GD, and therefore inflated IWD.*
+The `hint` that gives this issue away in above table is the WR GND. On 17Lands, however, the "WR GND" column is confounded by the overall winrate of the corresponding archetype, but also by the typical quality of the deck that the card is maindecked in and the typical quality of the player that player that card (which is why lessons have such a poor WR GND metric, which refers to a case where they are maindecked). This makes it trickier to use the "WR GND" column to detect this bias, but comparing the "WR GND" rating to the overall true win % of a given archetype can still be a start: If the WR GND rating is higher than the average WR of the archetype(s) that the card goes in (and you can assume no significant bias in average deck quality within those archetypes or in player skill), then the card may have an inflated WR GND, deflated WR GIH, and therefore deflated IWD. If it's the other way round (WR GND lower than average WR of archetype(s)), then the card may have deflated WR GND, inflated WR GIH, and therefore inflated IWD.*
 
-Another approach to look at 17Lands data without encountering this bias would be to look at "win rate when in deck", adjusted for the typical win % of the archetype(s) that the card goes in. Across thousands of games, this will still give you an idea of how good the card is, and, conveniently, it will automatically account for biases in terms of what other (weaker) cards you might need to play to make playing the card in question good.
-
+<!-- Another approach to look at 17Lands data without encountering this bias would be to look at "win rate when in deck", adjusted for the typical win % of the archetype(s) that the card goes in. Across thousands of games, this should still give an idea of how good the card is, and, conveniently, it will automatically account for biases in terms of what other (weaker) cards you might need to play to make playing the card in question good.
+ -->
 
 ## An Example From The Real Data
 
@@ -115,5 +115,7 @@ The following examples from the 17Lands tables (STX, BO1, Premier, as of June 9t
 | Killian                 | 59.1% | 61.3%  | 56.8%   | 4.6pp  |
 | Silverquill Apprentice  | 58.1% | 56.6%  | 59.0%   | -2.4pp |
 
+These two cards have surprisingly similar win rates "when in deck". However, Silverquill Apprentice really shines in the fastest games, whereas Killian is a bit better late game and can also easily be played in more controlling Silverquill decks. This will somewhat inflate the WR GIH for Killian compared to Silverquill Apprentice, and deflate WR GND.
 
+However, this example also illustrates that "GP WR" isn't a perfect metric either: if Silverquill Apprentice is mostly played in the most aggressive Silverquill decks (known for their notoriously high win rates), and Killian is also played in more controlling decks or even splashed in multicolor decks (both of which can probably be expected to have lower typical win rates than Silverquill aggro), then the "true" difference in the quality of the cards lies somewhere in between that the "GP WR" column would suggest and that the "WR GIH" or "IWD" columns would suggest.
 
